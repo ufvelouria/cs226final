@@ -117,14 +117,28 @@ function populateUI(profile) {
     // Fetch last played tracks
     fetchRecentTracks().then(tracks => {
         const container = document.getElementById("recent-tracks");
-        container.innerHTML = "";
-        tracks.forEach(track => {
+    container.innerHTML = "";
+
+    tracks.forEach(track => {
             const card = document.createElement("div");
             card.className = "track-card";
 
+            // Make the card clickable
+            const link = document.createElement("a");
+            link.href = track.external_urls.spotify; // Spotify track link
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.style.display = "flex";
+            link.style.textDecoration = "none";
+            link.style.color = "inherit";
+
             const img = new Image();
             img.src = track.album.images[0]?.url || "";
-            card.appendChild(img);
+            img.style.width = "60px";
+            img.style.height = "60px";
+            img.style.borderRadius = "8px";
+            img.style.marginRight = "12px";
+            link.appendChild(img);
 
             const info = document.createElement("div");
             info.className = "track-info";
@@ -139,7 +153,9 @@ function populateUI(profile) {
 
             info.appendChild(name);
             info.appendChild(artist);
-            card.appendChild(info);
+
+            link.appendChild(info);
+            card.appendChild(link);
 
             container.appendChild(card);
         });
