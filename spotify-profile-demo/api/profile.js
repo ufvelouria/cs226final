@@ -4,15 +4,23 @@ import cookie from "cookie";
 
 async function fetchSpotify(url, token) {
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401) throw new Error("Token expired");
-    return res.json();
+
+    // Debug: check content-type
+    const text = await res.text();
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        console.error("Spotify returned non-JSON:", text);
+        throw new Error("Spotify returned non-JSON response");
+    }
 }
+
 
 export default async function handler(req, res) {
     const cookies = cookie.parse(req.headers.cookie || "");
-    let token = cookies.spotify_token;
+    const token = cookies.spotify_token;
+    if (!token) return res.status(401).json({ error: "No access token, login first" });
 
-    if (!token) return res.status(401).json({ error: "Not logged in" });
 
     try {
         const [profile, topArtists, recentTracks] = await Promise.all([
