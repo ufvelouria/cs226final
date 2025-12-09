@@ -1,14 +1,17 @@
-app.get("/api/login", (req, res) => {
-  const client_id = process.env.SPOTIFY_CLIENT_ID;
-  const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+// api/login.js
+const querystring = require("querystring");
+
+module.exports = (req, res) => {
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
   const scope = "user-read-private user-read-email user-read-recently-played user-top-read";
 
-  const params = new URLSearchParams({
-    client_id,
+  const params = querystring.stringify({
     response_type: "code",
-    redirect_uri,
+    client_id: clientId,
     scope,
+    redirect_uri: redirectUri,
   });
 
-  res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
-});
+  res.redirect(`https://accounts.spotify.com/authorize?${params}`);
+};
