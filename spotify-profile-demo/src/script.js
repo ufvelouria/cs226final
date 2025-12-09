@@ -190,34 +190,7 @@ function populateUI(profile) {
             container.appendChild(card);
         });
     }); 
-    fetchTopArtists().then(artists => {
-        const container = document.getElementById("top-artists");
-        container.innerHTML = "<h3>Top Artists</h3>";
-
-        artists.forEach(artist => {
-            const card = document.createElement("div");
-            card.className = "artist-card";
-            card.style.cursor = "pointer";
-
-            // Open artist page when clicked
-            card.onclick = () => window.open(artist.external_urls.spotify, "_blank");
-
-            const img = new Image();
-            img.src = artist.images[0]?.url || "";
-            img.style.width = "60px";
-            img.style.height = "60px";
-            img.style.borderRadius = "50%";
-            img.style.marginRight = "12px";
-            card.appendChild(img);
-
-            const name = document.createElement("div");
-            name.innerText = artist.name;
-            name.style.fontWeight = "bold";
-
-            card.appendChild(name);
-            container.appendChild(card);
-        });
-    });
+    populateTopArtists();
 }
 async function fetchTopArtists() {
     const accessToken = localStorage.getItem("access_token");
@@ -230,4 +203,32 @@ async function fetchTopArtists() {
     if (!res.ok) return [];
     const data = await res.json();
     return data.items; // array of top artists
+}
+async function populateTopArtists() {
+    const artists = await fetchTopArtists();
+    const container = document.getElementById("top-artists");
+    container.innerHTML = "<h3>Top Artists</h3>";
+
+    if (!artists || artists.length === 0) {
+        container.innerHTML += "<p>No top artists found.</p>";
+        return;
+    }
+
+    artists.forEach(artist => {
+        const card = document.createElement("div");
+        card.className = "artist-card";
+
+        card.onclick = () => window.open(artist.external_urls.spotify, "_blank");
+
+        const img = new Image();
+        img.src = artist.images[0]?.url || "";
+        card.appendChild(img);
+
+        const name = document.createElement("div");
+        name.innerText = artist.name;
+        name.className = "artist-name";
+
+        card.appendChild(name);
+        container.appendChild(card);
+    });
 }

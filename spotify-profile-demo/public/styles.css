@@ -10,13 +10,11 @@ body {
 }
 
 .container {
-    max-width: 900px;
     width: 100%;
-    display: flex;
-    justify-content: center;
     padding: 20px;
+    display: flex;
+    justify-content: center; /* center the wrapper */
 }
-
 
 /* Profile Card */
 .profile-card {
@@ -116,11 +114,13 @@ body {
 }
 .content {
     display: flex;
-    gap: 20px;
+    gap: 30px; 
     align-items: flex-start;
+    max-width: 900px; 
+    width: 100%;
 }
 .left-panel {
-    width: 200px;
+    width: 200px; 
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -129,15 +129,36 @@ body {
 .left-panel h3 {
     margin-bottom: 12px;
 }
+.artist-card {
+    display: flex;
+    align-items: center;
+    background: #282828;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.artist-card:hover {
+    background: #1DB954;
+}
+
+.artist-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Artist name */
+.artist-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+}
 /* Mobile adjustments */
 @media (max-width: 480px) {
-    .container {
-        max-width: 100%;
-        padding: 10px;
-        flex-direction: column;
-        align-items: center;
-    }
-
     .content {
         flex-direction: column;
         align-items: center;
