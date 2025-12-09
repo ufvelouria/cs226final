@@ -16,11 +16,19 @@ async function init() {
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
 
-    if (storedToken) {
-        // Already logged in
-        const profile = await fetchProfile(storedToken);
-        const tracks = await fetchRecentTracks();
-        populateUI(profile, tracks);
+    // Only treat it as valid if it’s a non-empty string
+    if (storedToken && storedToken !== "null" && storedToken !== "") {
+        try {
+            // Optionally, verify token by fetching profile
+            const profile = await fetchProfile(storedToken);
+            if (!profile || profile.error) throw new Error("Token invalid");
+            const tracks = await fetchRecentTracks();
+            populateUI(profile, tracks);
+        } catch (err) {
+            console.log("Stored token invalid, re-authenticating...");
+            localStorage.removeItem("access_token");
+            redirectToAuthCodeFlow(clientId);
+        }
     } else if (code) {
         // Just returned from Spotify auth
         const token = await getAccessToken(clientId, code);
