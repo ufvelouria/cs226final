@@ -10,9 +10,13 @@ body {
 }
 
 .container {
-    max-width: 480px;
+    max-width: 900px;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
+
 
 /* Profile Card */
 .profile-card {
@@ -113,12 +117,10 @@ body {
 .main-content {
     display: flex;
     gap: 20px;
-    justify-content: center;
     align-items: flex-start;
 }
-
 .left-panel {
-    width: 180px; /* adjust as needed */
+    width: 200px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -127,7 +129,15 @@ body {
 .left-panel h3 {
     margin-bottom: 12px;
 }
+/* Mobile adjustments */
 @media (max-width: 480px) {
+    .container {
+        max-width: 100%;
+        padding: 10px;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .main-content {
         flex-direction: column;
         align-items: center;
