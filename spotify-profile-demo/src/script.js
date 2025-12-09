@@ -16,117 +16,55 @@ const recentTracks = 10;
 
 const topArtists = await fetchTopArtists();
 async function init() {
-    // clearData(); // for testing purposes, clear local storage on each load
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const storedToken = localStorage.getItem("access_token");
-    // makes sure that this works if the token is expired or invalid
-    if (storedToken && storedToken !== "null" && storedToken !== "") {
-        try { //try and catch to make sure that token is valid
-            const profile = await fetchProfile(storedToken);
-            if (!profile || profile.error) throw new Error("Token invalid");
-            const tracks = await fetchRecentTracks();
-            populateUI(profile, tracks);
-        } catch (err) {
-            console.log("Stored token invalid, re-authenticating...");
-            localStorage.removeItem("access_token");
-            redirectToAuthCodeFlow(clientId);
-        }
-    } else if (code) {
-        //gets code from spotify callback, lets user in
-        const token = await getAccessToken(clientId, code);
-        const profile = await fetchProfile(token);
-        const tracks = await fetchRecentTracks();
-        populateUI(profile, tracks);
-    } else {
-        // no code or token created, redirect to spotify auth
-        redirectToAuthCodeFlow(clientId);
+    const token = params.get("token");
+    if(!token) {
+        window.location.href = `/api/login`;
+        return;
     }
+
+    localStorage.setItem("access_token", token);
+
+    const profile = await fetch("/api/profile", {
+        headers: { Authorization: "Bearer " + token }
+    }).then(r => r.json());
+
+    const tracks = await fetch("/api/recent-tracks", {
+        headers: { Authorization: "Bearer " + token }
+    }).then(r => r.json());
+    const artists = await fetch("/api/top-artists", {
+        headers: { Authorization: "Bearer " + token }
+    }).then(r => r.json());
+    await saveUserToBackend(profile, artists);
+    const allUsers = await fetch("/api/users").then(r => r.json());
+
+    populateUI(profile, tracks, artists, allUsers);
 }
 
 // Call init() at the start
 init();
+// async function fetchProfile(token) {
+//     const result = await fetch("https://api.spotify.com/v1/me", {
+//         method: "GET", headers: { Authorization: `Bearer ${token}` }
+//     });
 
-export async function redirectToAuthCodeFlow(clientId) {
-    const verifier = generateCodeVerifier(128);
-    const challenge = await generateCodeChallenge(verifier);
+//     return await result.json();
+// }
+// async function fetchRecentTracks() {
+//     const accessToken = localStorage.getItem("access_token"); // store it when first fetched
+//     if (!accessToken) return [];
 
-    localStorage.setItem("verifier", verifier);
+//     const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=" + recentTracks, {
+//         headers: { Authorization: `Bearer ${accessToken}` }
+//     });
 
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("response_type", "code");
-    params.append("redirect_uri", redirectUri);
-    params.append("scope", "user-read-private user-read-email user-read-recently-played user-top-read");
-    params.append("code_challenge_method", "S256");
-    params.append("code_challenge", challenge);
+//     if (!res.ok) return [];
 
-    document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;``
-}
+//     const data = await res.json();
+//     return data.items.map(item => item.track);
+// }
 
-function generateCodeVerifier(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    for (let i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
-
-async function generateCodeChallenge(codeVerifier) {
-    const data = new TextEncoder().encode(codeVerifier);
-    const digest = await window.crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-}
-
-
-
-export async function getAccessToken(clientId, code) {
-    const verifier = localStorage.getItem("verifier");
-
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("grant_type", "authorization_code");
-    params.append("code", code);
-    params.append("redirect_uri", redirectUri);
-    params.append("code_verifier", verifier);
-
-    const result = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params
-    });
-
-    const { access_token } = await result.json();
-    localStorage.setItem("access_token", access_token);
-    return access_token;
-}
-async function fetchProfile(token) {
-    const result = await fetch("https://api.spotify.com/v1/me", {
-        method: "GET", headers: { Authorization: `Bearer ${token}` }
-    });
-
-    return await result.json();
-}
-async function fetchRecentTracks() {
-    const accessToken = localStorage.getItem("access_token"); // store it when first fetched
-    if (!accessToken) return [];
-
-    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=" + recentTracks, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-    });
-
-    if (!res.ok) return [];
-
-    const data = await res.json();
-    return data.items.map(item => item.track);
-}
-
-function populateUI(profile) {
+function populateUI(profile, recentTracks, topArtists, allUsers) {
     // Display name
     document.getElementById("displayName").innerText = profile.display_name;
 
@@ -137,114 +75,103 @@ function populateUI(profile) {
     const avatarContainer = document.getElementById("avatar");
     avatarContainer.innerHTML = ""; // clear previous
 
-    if (profile.images[0]) {
+    populateAvatar(profile);
+    populateRecentTracks(recentTracks);
+    
+    // Fetch last played tracks
+    populateTopArtists(topArtists);
+    
+}
+// async function fetchTopArtists() {
+//     const accessToken = localStorage.getItem("access_token");
+//     if (!accessToken) return [];
+
+//     const res = await fetch("https://api.spotify.com/v1/me/top/artists?limit=10", {
+//         headers: { Authorization: `Bearer ${accessToken}` }
+//     });
+
+//     if (!res.ok) return [];
+//     const data = await res.json();
+//     return data.items; // array of top artists
+// }
+function populateAvatar(profile) {
+    const avatarContainer = document.getElementById("avatar");
+    avatarContainer.innerHTML = "";
+
+    if (profile.images?.length > 0) {
         const link = document.createElement("a");
         link.href = profile.external_urls.spotify;
         link.target = "_blank";
-        link.rel = "noopener noreferrer";
 
-        const profileImage = new Image(200, 200);
-        profileImage.src = profile.images[0].url;
-        profileImage.style.borderRadius = "50%";
-        profileImage.style.cursor = "pointer";
+        const img = new Image(200, 200);
+        img.src = profile.images[0].url;
+        img.style.borderRadius = "50%";
 
-        link.appendChild(profileImage);
+        link.appendChild(img);
         avatarContainer.appendChild(link);
     }
-
-    // Fetch last played tracks
-    fetchRecentTracks().then(tracks => {
-        const container = document.getElementById("recent-tracks");
-        container.innerHTML = "";
-
-        tracks.forEach(track => {
-            const card = document.createElement("div");
-            card.className = "track-card";
-            card.style.cursor = "pointer"; // show clickable cursor
-
-            // Open Spotify track when card is clicked
-            card.onclick = () => {
-                window.open(track.external_urls.spotify, "_blank");
-            };
-
-            const img = new Image();
-            img.src = track.album.images[0]?.url || "";
-            img.style.width = "60px";
-            img.style.height = "60px";
-            img.style.borderRadius = "8px";
-            img.style.marginRight = "12px";
-            card.appendChild(img);
-
-            const info = document.createElement("div");
-            info.className = "track-info";
-
-            const name = document.createElement("div");
-            name.className = "track-name";
-            name.innerText = track.name;
-
-            const artist = document.createElement("div");
-            artist.className = "track-artist";
-            artist.innerText = track.artists.map(a => a.name).join(", ");
-
-            info.appendChild(name);
-            info.appendChild(artist);
-            card.appendChild(info);
-
-            container.appendChild(card);
-        });
-    }); 
-    populateTopArtists(profile, recentTracks);
-    
 }
-async function fetchTopArtists() {
-    const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) return [];
+function populateRecentTracks(tracks) {
+    const container = document.getElementById("recent-tracks");
+    container.innerHTML = "";
 
-    const res = await fetch("https://api.spotify.com/v1/me/top/artists?limit=10", {
-        headers: { Authorization: `Bearer ${accessToken}` }
+    tracks.forEach(track => {
+        const card = document.createElement("div");
+        card.className = "track-card";
+        card.onclick = () => window.open(track.external_urls.spotify);
+
+        const img = new Image();
+        img.src = track.album.images[0].url;
+        img.className = "track-image";
+
+        const info = document.createElement("div");
+        info.className = "track-info";
+
+        info.innerHTML = `
+            <div class="track-name">${track.name}</div>
+            <div class="track-artist">${track.artists.map(a => a.name).join(", ")}</div>
+        `;
+
+        card.appendChild(img);
+        card.appendChild(info);
+        container.appendChild(card);
     });
-
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.items; // array of top artists
 }
-async function populateTopArtists(profile, recentTracks) {
-    const artists = await fetchTopArtists();
+function populateTopArtists(artists) {
     const container = document.getElementById("top-artists");
     container.innerHTML = "<h3>Top Artists</h3>";
-
-    if (!artists || artists.length === 0) {
-        container.innerHTML += "<p>No top artists found.</p>";
-        return;
-    }
 
     artists.forEach(artist => {
         const card = document.createElement("div");
         card.className = "artist-card";
-
-        card.onclick = () => window.open(artist.external_urls.spotify, "_blank");
+        card.onclick = () => window.open(artist.external_urls.spotify);
 
         const img = new Image();
-        img.src = artist.images[0]?.url || "";
-        card.appendChild(img);
+        img.src = artist.images?.[0]?.url || "";
+        img.className = "artist-image";
 
         const name = document.createElement("div");
-        name.innerText = artist.name;
         name.className = "artist-name";
+        name.innerText = artist.name;
 
+        card.appendChild(img);
         card.appendChild(name);
         container.appendChild(card);
     });
-    // saveUserData(profile, recentTracks, artists);
-    populateRecommended(profile, artists);
 }
-async function saveUserToBackend(user) {
+async function saveUserToBackend(profile, topArtists) {
     await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user)
+        body: JSON.stringify({
+            id: profile.id,
+            displayName: profile.display_name,
+            avatar: profile.images?.[0]?.url || "",
+            topArtists: topArtists.map(a => a.name)
+        })
     });
 }
+
 
 async function fetchAllUsersFromBackend() {
     const res = await fetch("/api/users");
