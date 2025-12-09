@@ -76,9 +76,21 @@ async function fetchProfile(token) {
 function populateUI(profile) {
     document.getElementById("displayName").innerText = profile.display_name;
     if (profile.images[0]) {
+        const avatarContainer = document.getElementById("avatar");
+        avatarContainer.innerHTML = ""; // clear existing
+
+        const link = document.createElement("a");
+        link.href = profile.external_urls.spotify;
+        link.target = "_blank"; // open in new tab
+        link.rel = "noopener noreferrer";
+
         const profileImage = new Image(200, 200);
         profileImage.src = profile.images[0].url;
-        document.getElementById("avatar").appendChild(profileImage);
+        profileImage.style.borderRadius = "50%";
+        profileImage.style.cursor = "pointer";
+
+        link.appendChild(profileImage);
+        avatarContainer.appendChild(link);
         document.getElementById("imgUrl").innerText = profile.images[0].url;
     }
     document.getElementById("id").innerText = profile.id;
