@@ -1,4 +1,3 @@
-/* Body & container */
 body {
     margin: 0;
     font-family: "Inter", sans-serif;
@@ -15,7 +14,7 @@ body {
 }
 
 
-/* Profile Card */
+/*profile related*/
 .profile-card {
     background: #181818;
     border-radius: 20px;
@@ -24,7 +23,6 @@ body {
     box-shadow: 0 6px 20px rgba(0,0,0,0.6);
 }
 
-/* Avatar */
 .avatar img {
     width: 150px;
     height: 150px;
@@ -38,29 +36,24 @@ body {
     transform: scale(1.05);
 }
 
-/* Username */
 .username {
     font-size: 26px;
     font-weight: 700;
     margin: 15px 0 5px 0;
 }
-
-/* Followers */
 .followers {
     font-size: 14px;
     color: #b3b3b3;
     margin-bottom: 20px;
 }
 
-/* Recent Tracks Feed */
+/* recent tracks section */
 .recent-tracks {
     margin-top: 25px;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
-
-/* Track card */
 .track-card {
     display: flex;
     align-items: center;
@@ -135,6 +128,7 @@ body {
     margin-bottom: 15px;
     color: white;
 }
+/* recommended artists section */
 .artist-card {
     display: flex;
     align-items: center;
@@ -161,7 +155,7 @@ body {
     font-size: 16px; 
     color: white;
 }
-/* recommended artists section */
+
 .right-panel {
     position: absolute;
     right: 20px;   

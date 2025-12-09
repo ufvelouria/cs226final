@@ -1,15 +1,5 @@
-// const clientId = "6c119d659723461ea03ee2c8e4957245"; // Replace with your client ID
-// const params = new URLSearchParams(window.location.search);
-// const code = params.get("code");
-// if (!code) {
-//     redirectToAuthCodeFlow(clientId);
-// } else {
-//     const accessToken = await getAccessToken(clientId, code);
-//     const profile = await fetchProfile(accessToken);
-//     populateUI(profile);
-// }
-const clientId = "6c119d659723461ea03ee2c8e4957245";
-const redirectUri = "https://cs226final.vercel.app/";
+const clientId = "6c119d659723461ea03ee2c8e4957245"; //setup
+const redirectUri = "https://cs226final.vercel.app/"; //setup
 
 const recentTracks = 10;
 
@@ -44,7 +34,7 @@ async function init() {
     }
 }
 
-// Call init() at the start
+
 init();
 
 export async function redirectToAuthCodeFlow(clientId) {
@@ -127,15 +117,13 @@ async function fetchRecentTracks() {
 }
 
 function populateUI(profile) {
-    // Display name
+
     document.getElementById("displayName").innerText = profile.display_name;
 
-    // Followers
     document.getElementById("followers").innerText = `Followers: ${profile.followers.total}`;
 
-    // Avatar clickable
     const avatarContainer = document.getElementById("avatar");
-    avatarContainer.innerHTML = ""; // clear previous
+    avatarContainer.innerHTML = ""; 
 
     if (profile.images[0]) {
         const link = document.createElement("a");
@@ -152,7 +140,6 @@ function populateUI(profile) {
         avatarContainer.appendChild(link);
     }
 
-    // Fetch last played tracks
     fetchRecentTracks().then(tracks => {
         const container = document.getElementById("recent-tracks");
         container.innerHTML = "";
@@ -160,9 +147,8 @@ function populateUI(profile) {
         tracks.forEach(track => {
             const card = document.createElement("div");
             card.className = "track-card";
-            card.style.cursor = "pointer"; // show clickable cursor
+            card.style.cursor = "pointer"; 
 
-            // Open Spotify track when card is clicked
             card.onclick = () => {
                 window.open(track.external_urls.spotify, "_blank");
             };
@@ -235,7 +221,7 @@ async function populateTopArtists(profile, recentTracks) {
         card.appendChild(name);
         container.appendChild(card);
     });
-    // saveUserData(profile, recentTracks, artists);
+    saveUserData(profile, recentTracks, artists);
     populateRecommended(profile, artists);
 }
 function saveUserData(profile, recentTracks, topArtists) {
@@ -277,26 +263,20 @@ function clearData(){
     localStorage.clear();
 }
 
-//recommendation system based on shared top artists
 function getRecommendedUsers(currentProfile, currentTopArtists) {
     const allUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Filter out the current user
     const otherUsers = allUsers.filter(u => u.id !== currentProfile.id);
 
-    // Map users with a "score" based on shared artists
-    const scoredUsers = otherUsers.map(user => {
+    const users = otherUsers.map(user => {
         const sharedArtists = user.topArtists.filter(artist =>
             currentTopArtists.some(a => a.name === artist.name)
         );
         return { ...user, sharedCount: sharedArtists.length };
     });
+    users.sort((a, b) => b.sharedCount - a.sharedCount);
 
-    // Sort by most shared artists
-    scoredUsers.sort((a, b) => b.sharedCount - a.sharedCount);
-
-    // Return top 5 recommendations
-    return scoredUsers.filter(u => u.sharedCount > 0).slice(0, 5);
+    return users.filter(u => u.sharedCount > 0).slice(0, 5);
 }
 function populateRecommended(profile, topArtists) {
     const recommended = getRecommendedUsers(profile, topArtists);
