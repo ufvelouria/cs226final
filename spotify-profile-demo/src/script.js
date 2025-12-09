@@ -1,20 +1,3 @@
-// const clientId = "6c119d659723461ea03ee2c8e4957245"; // Replace with your client ID
-// const params = new URLSearchParams(window.location.search);
-// const code = params.get("code");
-// if (!code) {
-//     redirectToAuthCodeFlow(clientId);
-// } else {
-//     const accessToken = await getAccessToken(clientId, code);
-//     const profile = await fetchProfile(accessToken);
-//     populateUI(profile);
-// }
-const clientId = "6c119d659723461ea03ee2c8e4957245";
-const redirectUri = "https://cs226final.vercel.app/";
-
-const recentTracks = 10;
-
-
-const topArtists = await fetchTopArtists();
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
