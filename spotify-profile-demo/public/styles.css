@@ -164,8 +164,8 @@ body {
 /* recommended artists section */
 .right-panel {
     position: absolute;
-    right: 20px;   /* mirror of left panel's left: 20px */
-    top: 20px;     /* align with profile top */
+    right: 20px;   
+    top: 20px;    
     width: 220px;
     display: flex;
     flex-direction: column;
