@@ -6,7 +6,7 @@ const recentTracks = 10;
 
 const topArtists = await fetchTopArtists();
 async function init() {
-    // clearData(); // for testing purposes, clear local storage on each load
+    clearData(); // for testing purposes, clear local storage on each load
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
