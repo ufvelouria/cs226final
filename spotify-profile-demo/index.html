@@ -1,23 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>My Spotify Profile</title>
-        <script src="src/script.js" type="module"></script>
-    </head>
-    <body>
-        <h1>Display your Spotify profile data</h1>
+<head>
+    <meta charset="utf-8">
+    <title>My Spotify Profile</title>
+    <script src="src/script.js" type="module"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        <section id="profile">
-        <h2>Logged in as <span id="displayName"></span></h2>
-        <span id="avatar"></span>
-        <ul>
-            <li>User ID: <span id="id"></span></li>
-            <li>Email: <span id="email"></span></li>
-            <li>Spotify URI: <a id="uri" href="#"></a></li>
-            <li>Link: <a id="url" href="#"></a></li>
-            <li>Profile Image: <span id="imgUrl"></span></li>
-        </ul>
-        </section>
-    </body>
-</html>
+<div class="container">
+    <div class="profile-card">
+
+        <div class="profile-header">
+            <div id="avatar" class="avatar"></div>
+
+            <div class="profile-info">
+                <h1 id="displayName" class="display-name">Loading...</h1>
+                <p class="username">@spotify-user</p>
+
+                <div class="profile-links">
+                    <a id="uri" href="#" target="_blank" class="btn">Open in Spotify</a>
+                    <a id="url" href="#" target="_blank" class="btn-outline">Profile JSON</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <span class="stat-label">User ID</span>
+                <span class="stat-value" id="id"></span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-label">Email</span>
+                <span class="stat-value" id="email"></span>
+            </div>
+
+            <div class="stat-box">
