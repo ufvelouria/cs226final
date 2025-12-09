@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       return res.status(500).send("No access token returned");
     }
 
-    // redirect to frontend with token
+    // Redirect to frontend with token
     res.redirect(`${frontendUrl}?token=${data.access_token}`);
   } catch (err) {
     console.error("Callback error:", err);
