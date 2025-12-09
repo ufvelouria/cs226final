@@ -32,14 +32,14 @@ export default async function handler(req, res) {
         secure: isProd,
         maxAge: 3600,
         path: "/",
-        sameSite: "lax" // important for OAuth redirects
+        sameSite: "none" // important for OAuth redirects
       }),
       cookie.serialize("spotify_refresh_token", data.refresh_token, {
         httpOnly: true,
         secure: isProd,
         maxAge: 60 * 60 * 24 * 30,
         path: "/",
-        sameSite: "lax"
+        sameSite: "none"
       })
     ]);
 
