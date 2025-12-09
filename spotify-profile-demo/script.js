@@ -1,15 +1,18 @@
 async function init() {
     const params = new URLSearchParams(window.location.search);
-    let token = tokenFromUrl || localStorage.getItem("access_token");
     const tokenFromUrl = params.get("token");
-    if(!token) {
-        window.location.href = `/api/login`;
+    let token = tokenFromUrl || localStorage.getItem("access_token");
+
+    if (!token) {
+        // No token → go login
+        window.location.href = "/api/login";
         return;
     }
+
     if (tokenFromUrl) {
         localStorage.setItem("access_token", tokenFromUrl);
-        // Remove ?token=... from URL so it doesn't keep redirecting
-        window.history.replaceState({}, document.title, "/");
+        window.history.replaceState({}, document.title, "/"); // remove ?token=...
+        token = tokenFromUrl;
     }
 
     const profile = await fetch("/api/profile", {
