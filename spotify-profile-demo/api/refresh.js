@@ -6,10 +6,7 @@ export default async function handler(req, res) {
     const cookies = cookie.parse(req.headers.cookie || "");
     const refresh_token = cookies.spotify_refresh_token;
 
-    if (!refresh_token) {
-        res.status(401).json({ error: "No refresh token" });
-        return;
-    }
+    if (!refresh_token) return res.status(401).json({ error: "No refresh token" });
 
     const body = new URLSearchParams({
         grant_type: "refresh_token",
@@ -27,7 +24,6 @@ export default async function handler(req, res) {
 
         const data = await tokenRes.json();
 
-        // Update access_token cookie
         res.setHeader("Set-Cookie", cookie.serialize("spotify_token", data.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
