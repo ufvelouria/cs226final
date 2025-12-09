@@ -1,26 +1,34 @@
+// api/callback.js
+import fetch from 'node-fetch';
+
 export default async function handler(req, res) {
     const code = req.query.code;
-    const redirect_uri = "https://cs226final.vercel.app/api/callback";
+    const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
 
-    const creds = Buffer.from(
-        process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET
-    ).toString("base64");
+    // Get code_verifier from cookie
+    const cookie = req.headers.cookie || "";
+    const match = cookie.match(/verifier=([^;]+)/);
+    const codeVerifier = match ? match[1] : "";
 
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-            Authorization: `Basic ${creds}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            code,
-            redirect_uri,
-            grant_type: "authorization_code",
-        }),
+    const params = new URLSearchParams({
+        client_id: clientId,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier
     });
 
-    const data = await response.json();
+    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    });
 
-    // redirect back to frontend with token
-    res.redirect(`/app?token=${data.access_token}`);
+    const data = await tokenRes.json();
+    const accessToken = data.access_token;
+
+    // Redirect back to frontend with token
+    res.writeHead(302, { Location: `${redirectUri}?token=${accessToken}` });
+    res.end();
 }
