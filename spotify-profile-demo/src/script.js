@@ -13,6 +13,8 @@ const redirectUri = "https://cs226final.vercel.app/";
 
 const recentTracks = 10;
 
+
+const topArtists = await fetchTopArtists();
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
@@ -191,6 +193,7 @@ function populateUI(profile) {
         });
     }); 
     populateTopArtists();
+    saveUserData(profile, recentTracks, topArtists);
 }
 async function fetchTopArtists() {
     const accessToken = localStorage.getItem("access_token");
@@ -231,4 +234,27 @@ async function populateTopArtists() {
         card.appendChild(name);
         container.appendChild(card);
     });
+}
+function saveUserData(profile, recentTracks, topArtists) {
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const filtered = users.filter(u => u.id !== profile.id);
+
+
+    const newUser = {
+        id: profile.id,
+        displayName: profile.display_name,
+        followers: profile.followers.total,
+        avatar: profile.images[0]?.url || "",
+        recentTracks: recentTracks,
+        topArtists: topArtists.map(a => ({ name: a.name, url: a.external_urls.spotify, image: a.images[0]?.url }))
+    };
+
+
+    filtered.push(newUser);
+    localStorage.setItem("users", JSON.stringify(filtered));
+}
+function getAllUsers() {
+    return JSON.parse(localStorage.getItem("users")) || [];
 }
