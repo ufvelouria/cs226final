@@ -9,11 +9,13 @@ export default function handler(req, res) {
         "user-read-recently-played"
     ].join(" ");
 
-    const auth_url = `https://accounts.spotify.com/authorize?` +
-                     `client_id=${client_id}` +
-                     `&response_type=code` +
-                     `&redirect_uri=${encodeURIComponent(redirect_uri)}` +
-                     `&scope=${encodeURIComponent(scope)}`;
+    const auth_url = `https://accounts.spotify.com/authorize` +
+                 `?client_id=${client_id}` +
+                 `&response_type=code` +
+                 `&redirect_uri=${encodeURIComponent(redirect_uri)}` +
+                 `&scope=${encodeURIComponent(scope)}`;
+    console.log("Auth URL:", auth_url);
+
 
     // Redirect the browser to Spotify login
     res.writeHead(302, { Location: auth_url });
