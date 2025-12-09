@@ -11,6 +11,8 @@
 const clientId = "6c119d659723461ea03ee2c8e4957245";
 const redirectUri = "https://cs226final.vercel.app/";
 
+const recentTracks = 10;
+
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
@@ -112,7 +114,7 @@ async function fetchRecentTracks() {
     const accessToken = localStorage.getItem("access_token"); // store it when first fetched
     if (!accessToken) return [];
 
-    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=10", {
+    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=" + recentTracks, {
         headers: { Authorization: `Bearer ${accessToken}` }
     });
 
