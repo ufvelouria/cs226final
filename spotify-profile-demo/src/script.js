@@ -64,6 +64,7 @@ export async function getAccessToken(clientId, code) {
     });
 
     const { access_token } = await result.json();
+    localStorage.setItem("access_token", access_token);
     return access_token;
 }
 async function fetchProfile(token) {
@@ -74,14 +75,20 @@ async function fetchProfile(token) {
     return await result.json();
 }
 function populateUI(profile) {
+    // Display name
     document.getElementById("displayName").innerText = profile.display_name;
-    if (profile.images[0]) {
-        const avatarContainer = document.getElementById("avatar");
-        avatarContainer.innerHTML = ""; // clear existing
 
+    // Followers
+    document.getElementById("followers").innerText = `Followers: ${profile.followers.total}`;
+
+    // Avatar clickable
+    const avatarContainer = document.getElementById("avatar");
+    avatarContainer.innerHTML = ""; // clear previous
+
+    if (profile.images[0]) {
         const link = document.createElement("a");
         link.href = profile.external_urls.spotify;
-        link.target = "_blank"; // open in new tab
+        link.target = "_blank";
         link.rel = "noopener noreferrer";
 
         const profileImage = new Image(200, 200);
@@ -91,12 +98,49 @@ function populateUI(profile) {
 
         link.appendChild(profileImage);
         avatarContainer.appendChild(link);
-        document.getElementById("imgUrl").innerText = profile.images[0].url;
     }
-    document.getElementById("id").innerText = profile.id;
-    document.getElementById("email").innerText = profile.email;
-    document.getElementById("uri").innerText = profile.uri;
-    document.getElementById("uri").setAttribute("href", profile.external_urls.spotify);
-    document.getElementById("url").innerText = profile.href;
-    document.getElementById("url").setAttribute("href", profile.href);
+
+    // Fetch last played tracks
+    fetchRecentTracks().then(tracks => {
+        const container = document.getElementById("recent-tracks");
+        container.innerHTML = "";
+        tracks.forEach(track => {
+            const card = document.createElement("div");
+            card.className = "track-card";
+
+            const img = new Image();
+            img.src = track.album.images[0]?.url || "";
+            card.appendChild(img);
+
+            const info = document.createElement("div");
+            info.className = "track-info";
+
+            const name = document.createElement("div");
+            name.className = "track-name";
+            name.innerText = track.name;
+
+            const artist = document.createElement("div");
+            artist.className = "track-artist";
+            artist.innerText = track.artists.map(a => a.name).join(", ");
+
+            info.appendChild(name);
+            info.appendChild(artist);
+            card.appendChild(info);
+
+            container.appendChild(card);
+        });
+    });
+}
+async function fetchRecentTracks() {
+    const accessToken = localStorage.getItem("access_token"); // store it when first fetched
+    if (!accessToken) return [];
+
+    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=5", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return data.items.map(item => item.track);
 }
