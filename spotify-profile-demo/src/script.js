@@ -16,10 +16,9 @@ async function init() {
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
 
-    // Only treat it as valid if it’s a non-empty string
+    // makes sure that this works if the token is expired or invalid
     if (storedToken && storedToken !== "null" && storedToken !== "") {
-        try {
-            // Optionally, verify token by fetching profile
+        try { //try and catch to make sure that token is valid
             const profile = await fetchProfile(storedToken);
             if (!profile || profile.error) throw new Error("Token invalid");
             const tracks = await fetchRecentTracks();
@@ -30,13 +29,13 @@ async function init() {
             redirectToAuthCodeFlow(clientId);
         }
     } else if (code) {
-        // Just returned from Spotify auth
+        //gets code from spotify callback, lets user in
         const token = await getAccessToken(clientId, code);
         const profile = await fetchProfile(token);
         const tracks = await fetchRecentTracks();
         populateUI(profile, tracks);
     } else {
-        // Not logged in
+        // no code or token created, redirect to spotify auth
         redirectToAuthCodeFlow(clientId);
     }
 }
@@ -53,7 +52,7 @@ export async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "https://cs226final.vercel.app/");
+    params.append("redirect_uri", redirectUri);
     params.append("scope", "user-read-private user-read-email user-read-recently-played");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
@@ -89,7 +88,7 @@ export async function getAccessToken(clientId, code) {
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "https://cs226final.vercel.app/");
+    params.append("redirect_uri", redirectUri);
     params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
