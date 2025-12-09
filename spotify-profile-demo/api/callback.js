@@ -33,19 +33,20 @@ export default async function handler(req, res) {
 
         // Set HTTP-only cookie for the access token
         res.setHeader("Set-Cookie", [
-            cookie.serialize("spotify_token", access_token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                maxAge: 3600,
-                path: "/"
-            }),
-            cookie.serialize("spotify_refresh_token", data.refresh_token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                maxAge: 60 * 60 * 24 * 30, // 30 days
-                path: "/"
-            })
-        ]);
+        cookie.serialize("spotify_token", access_token, {
+            httpOnly: true,
+            secure: isSecure,
+            maxAge: 3600,
+            path: "/"
+        }),
+        cookie.serialize("spotify_refresh_token", data.refresh_token, {
+            httpOnly: true,
+            secure: isSecure,
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            path: "/"
+        })
+    ]);
+
 
 
         // Redirect to homepage without token in URL
