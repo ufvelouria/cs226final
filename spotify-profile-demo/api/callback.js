@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 export default async function handler(req, res) {
   try {
     const code = req.query.code;
@@ -9,7 +11,8 @@ export default async function handler(req, res) {
     const frontendUrl = process.env.FRONTEND_URL || "https://cs226final.vercel.app/";
 
     if (!clientId || !clientSecret || !redirectUri) {
-      return res.status(500).send("Missing environment variables");
+      console.error("Missing environment variables");
+      return res.status(500).send("Server misconfigured");
     }
 
     const body = new URLSearchParams({
@@ -33,16 +36,15 @@ export default async function handler(req, res) {
     }
 
     const data = await tokenRes.json();
-    const access_token = data.access_token;
-
-    if (!access_token) {
-      return res.status(500).send("No access token received");
+    if (!data.access_token) {
+      console.error("No access token returned from Spotify", data);
+      return res.status(500).send("No access token returned");
     }
 
-    // Redirect to frontend with token
-    res.redirect(`${frontendUrl}?token=${access_token}`);
+    // redirect to frontend with token
+    res.redirect(`${frontendUrl}?token=${data.access_token}`);
   } catch (err) {
     console.error("Callback error:", err);
-    res.status(500).send("Server error");
+    res.status(500).send("Internal server error");
   }
 }
