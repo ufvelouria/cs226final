@@ -293,7 +293,7 @@ function populateRecommended(profile, topArtists) {
         card.className = "user-card";
 
         card.onclick = () => {
-            alert(`You clicked ${user.displayName}`); // could expand with more actions
+            alert(`Placeholder action for ${user.displayName}`); 
         };
 
         const img = new Image();
