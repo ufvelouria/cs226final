@@ -1,6 +1,6 @@
 async function init() {
     const params = new URLSearchParams(window.location.search);
-    const token = tokenFromUrl || localStorage.getItem("access_token");
+    let token = tokenFromUrl || localStorage.getItem("access_token");
     const tokenFromUrl = params.get("token");
     if(!token) {
         window.location.href = `/api/login`;
