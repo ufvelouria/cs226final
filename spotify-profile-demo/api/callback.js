@@ -1,50 +1,42 @@
+// api/callback.js
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-  try {
-    const code = req.query.code;
-    if (!code) return res.status(400).send("No code provided");
+    const code = req.query.code || null;
+    const client_id = process.env.SPOTIFY_CLIENT_ID;
+    const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+    const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
 
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
-    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-    const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
-    const frontendUrl = process.env.FRONTEND_URL || "https://cs226final.vercel.app/";
-
-    if (!clientId || !clientSecret || !redirectUri) {
-      console.error("Missing environment variables");
-      return res.status(500).send("Server misconfigured");
+    if (!code) {
+        res.status(400).send("No code provided");
+        return;
     }
 
     const body = new URLSearchParams({
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      client_secret: clientSecret,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri,
+        client_id,
+        client_secret
     });
 
-    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
+    try {
+        const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body
+        });
 
-    if (!tokenRes.ok) {
-      const text = await tokenRes.text();
-      console.error("Spotify token error:", text);
-      return res.status(500).send("Failed to get token from Spotify");
+        const data = await tokenResponse.json();
+        const access_token = data.access_token;
+
+        // Redirect to frontend with access token in query string
+        res.writeHead(302, { Location: `/?access_token=${access_token}` });
+        res.end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching access token");
     }
-
-    const data = await tokenRes.json();
-    if (!data.access_token) {
-      console.error("No access token returned from Spotify", data);
-      return res.status(500).send("No access token returned");
-    }
-
-    // Redirect to frontend with token
-    res.redirect(`${frontendUrl}?token=${data.access_token}`);
-  } catch (err) {
-    console.error("Callback error:", err);
-    res.status(500).send("Internal server error");
-  }
 }
