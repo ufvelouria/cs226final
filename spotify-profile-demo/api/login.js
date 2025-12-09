@@ -15,6 +15,7 @@ export default function handler(req, res) {
                      `&redirect_uri=${encodeURIComponent(redirect_uri)}` +
                      `&scope=${encodeURIComponent(scope)}`;
 
+    // Redirect the browser to Spotify login
     res.writeHead(302, { Location: auth_url });
     res.end();
 }
