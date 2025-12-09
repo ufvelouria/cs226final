@@ -1,165 +1,92 @@
-/* GLOBAL */
-body {
+/* GENERAL RESET */
+* {
     margin: 0;
-    background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
-    font-family: 'Inter', Arial, sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1db954, #121212);
     color: white;
     min-height: 100vh;
-}
-
-/* Center Container */
-.container {
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 20px;
 }
 
-/* Profile Card */
-.profile-card {
-    background: #121212;
-    padding: 35px;
+/* CONTAINER */
+.container {
     width: 100%;
-    max-width: 650px;
+    max-width: 450px;
+}
+
+/* PROFILE CARD */
+.profile-card {
+    background: rgba(0,0,0,0.4);
+    padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 0 25px #000;
-    border: 1px solid #1db95455;
-    backdrop-filter: blur(6px);
-    animation: fadeIn 0.9s ease-out;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 }
 
-/* Profile Header */
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-/* Avatar */
+/* AVATAR */
 .avatar img {
-    width: 160px;
-    height: 160px;
-    border-radius: 100%;
-    object-fit: cover;
-    border: 5px solid #1db954;
-    box-shadow: 0 0 25px #1db95488;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #1db954;
+    margin-bottom: 15px;
 }
 
-/* Text */
-.display-name {
-    margin: 0;
-    font-size: 32px;
-    font-weight: 700;
-    text-shadow: 0 0 8px #1db95488;
-}
-
+/* USERNAME */
 .username {
-    margin: 6px 0 15px 0;
-    color: #b5b5b5;
-    font-size: 16px;
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
-/* Buttons */
-.profile-links {
-    display: flex;
-    gap: 10px;
-}
-
+/* BUTTONS */
 .btn {
+    display: inline-block;
+    padding: 12px 18px;
     background: #1db954;
-    color: #000;
-    padding: 10px 18px;
     border-radius: 30px;
+    color: white;
     text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 0 12px #1db954aa;
-    transition: 0.2s ease-in-out;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
 .btn:hover {
-    background: #18a046;
-    transform: scale(1.05);
+    background: #17a246;
 }
 
-/* Section Title */
-.section-title {
-    margin-top: 35px;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    color: #1db954;
-}
-
-/* Stat Boxes */
-.stats {
+/* EXTRA INFO */
+.extra-info {
     margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    font-size: 14px;
 }
 
-.stat-box {
-    background: #181818;
-    padding: 20px;
-    border-radius: 14px;
-    text-align: center;
-    border: 1px solid #2a2a2a;
-    box-shadow: 0 0 10px #0007;
+.extra-info a {
+    color: #1db954;
+    text-decoration: underline;
+    word-break: break-all;
 }
 
-/* Fun colorful glowing border */
-.colorful {
-    border: 1px solid #1db954;
-    box-shadow: 0 0 12px #1db95477;
-}
-
-.stat-label {
-    color: #b5b5b5;
-}
-
-.stat-value {
-    margin-top: 8px;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-/* Mobile Responsive */
-@media (max-width: 700px) {
-
+/* MOBILE FRIENDLY */
+@media (max-width: 480px) {
     .profile-card {
-        padding: 25px;
+        padding: 20px;
     }
 
-    .profile-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .avatar img {
-        width: 120px;
-        height: 120px;
-    }
-
-    .display-name {
-        font-size: 26px;
-    }
-
-    .profile-links {
-        flex-direction: column;
-        width: 100%;
+    .username {
+        font-size: 20px;
     }
 
     .btn {
-        width: 100%;
-        text-align: center;
+        font-size: 14px;
+        padding: 10px 16px;
     }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Fade animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
