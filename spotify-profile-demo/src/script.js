@@ -1,23 +1,40 @@
-const params = new URLSearchParams(window.location.search);
-const code = params.get("code");
-const accessToken = localStorage.getItem("access_token");
+// const clientId = "6c119d659723461ea03ee2c8e4957245"; // Replace with your client ID
+// const params = new URLSearchParams(window.location.search);
+// const code = params.get("code");
+// if (!code) {
+//     redirectToAuthCodeFlow(clientId);
+// } else {
+//     const accessToken = await getAccessToken(clientId, code);
+//     const profile = await fetchProfile(accessToken);
+//     populateUI(profile);
+// }
+const clientId = "6c119d659723461ea03ee2c8e4957245";
+const redirectUri = "https://cs226final.vercel.app/";
 
-if (accessToken) {
-    // Already logged in, fetch profile and tracks
-    const profile = await fetchProfile(accessToken);
-    const recentTracks = await fetchRecentTracks();
-    populateUI(profile, recentTracks);
-} else if (code) {
-    // Get new access token
-    const newToken = await getAccessToken(clientId, code);
-    const profile = await fetchProfile(newToken);
-    const recentTracks = await fetchRecentTracks();
-    populateUI(profile, recentTracks);
-} else {
-    // No token, start login
-    redirectToAuthCodeFlow(clientId);
+async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const storedToken = localStorage.getItem("access_token");
+
+    if (storedToken) {
+        // Already logged in
+        const profile = await fetchProfile(storedToken);
+        const tracks = await fetchRecentTracks();
+        populateUI(profile, tracks);
+    } else if (code) {
+        // Just returned from Spotify auth
+        const token = await getAccessToken(clientId, code);
+        const profile = await fetchProfile(token);
+        const tracks = await fetchRecentTracks();
+        populateUI(profile, tracks);
+    } else {
+        // Not logged in
+        redirectToAuthCodeFlow(clientId);
+    }
 }
 
+// Call init() at the start
+init();
 
 export async function redirectToAuthCodeFlow(clientId) {
     const verifier = generateCodeVerifier(128);
