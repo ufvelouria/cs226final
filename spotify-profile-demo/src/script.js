@@ -233,12 +233,14 @@ async function populateTopArtists(profile, recentTracks) {
         card.appendChild(name);
         container.appendChild(card);
     });
+    saveUserData(profile, recentTracks, artists);
 }
 function saveUserData(profile, recentTracks, topArtists) {
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    const filtered = users.filter(u => u.id !== profile.id);
+ 
+    const existingIndex = users.findIndex(u => u.id === profile.id);
 
 
     const newUser = {
@@ -247,14 +249,27 @@ function saveUserData(profile, recentTracks, topArtists) {
         followers: profile.followers.total,
         avatar: profile.images[0]?.url || "",
         recentTracks: recentTracks,
-        topArtists: topArtists.map(a => ({ name: a.name, url: a.external_urls.spotify, image: a.images[0]?.url }))
+        topArtists: topArtists.map(a => ({
+            name: a.name,
+            url: a.external_urls.spotify,
+            image: a.images[0]?.url
+        }))
     };
 
+    if (existingIndex !== -1) {
 
-    filtered.push(newUser);
-    localStorage.setItem("users", JSON.stringify(filtered));
-    saveUserData(profile, recentTracks, topArtists);
+        users[existingIndex] = newUser;
+    } else {
+
+        users.push(newUser);
+    }
+
+
+    localStorage.setItem("users", JSON.stringify(users));
 }
 function getAllUsers() {
     return JSON.parse(localStorage.getItem("users")) || [];
+}
+function clearData(){
+    localStorage.clear();
 }
