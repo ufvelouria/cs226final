@@ -44,18 +44,17 @@ export default async function handler(req, res) {
         res.setHeader("Set-Cookie", [
             cookie.serialize("spotify_token", access_token, {
                 httpOnly: true,
-                secure: isProduction,
+                secure: isProduction,   // true on Vercel, false locally
                 maxAge: 3600,
-                path: "/"
+                path: "/"               // VERY important
             }),
             cookie.serialize("spotify_refresh_token", refresh_token, {
                 httpOnly: true,
                 secure: isProduction,
-                maxAge: 60 * 60 * 24 * 30, // 30 days
+                maxAge: 60 * 60 * 24 * 30,
                 path: "/"
             })
         ]);
-
         // Redirect to homepage
         res.writeHead(302, { Location: "/" });
         res.end();
