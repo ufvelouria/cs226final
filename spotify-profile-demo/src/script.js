@@ -193,6 +193,7 @@ function populateUI(profile) {
         });
     }); 
     populateTopArtists(profile, recentTracks);
+    
 }
 async function fetchTopArtists() {
     const accessToken = localStorage.getItem("access_token");
@@ -234,6 +235,7 @@ async function populateTopArtists(profile, recentTracks) {
         container.appendChild(card);
     });
     saveUserData(profile, recentTracks, artists);
+    populateRecommended(profile, artists);
 }
 function saveUserData(profile, recentTracks, topArtists) {
 
@@ -272,4 +274,56 @@ function getAllUsers() {
 }
 function clearData(){
     localStorage.clear();
+}
+
+//recommendation system based on shared top artists
+function getRecommendedUsers(currentProfile, currentTopArtists) {
+    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Filter out the current user
+    const otherUsers = allUsers.filter(u => u.id !== currentProfile.id);
+
+    // Map users with a "score" based on shared artists
+    const scoredUsers = otherUsers.map(user => {
+        const sharedArtists = user.topArtists.filter(artist =>
+            currentTopArtists.some(a => a.name === artist.name)
+        );
+        return { ...user, sharedCount: sharedArtists.length };
+    });
+
+    // Sort by most shared artists
+    scoredUsers.sort((a, b) => b.sharedCount - a.sharedCount);
+
+    // Return top 5 recommendations
+    return scoredUsers.filter(u => u.sharedCount > 0).slice(0, 5);
+}
+function populateRecommended(profile, topArtists) {
+    const recommended = getRecommendedUsers(profile, topArtists);
+    const container = document.getElementById("recommended");
+    container.innerHTML = "<h3>Recommended People</h3>";
+
+    if (recommended.length === 0) {
+        container.innerHTML += "<p>No recommendations found.</p>";
+        return;
+    }
+
+    recommended.forEach(user => {
+        const card = document.createElement("div");
+        card.className = "user-card";
+
+        card.onclick = () => {
+            alert(`You clicked ${user.displayName}`); // could expand with more actions
+        };
+
+        const img = new Image();
+        img.src = user.avatar;
+        card.appendChild(img);
+
+        const name = document.createElement("div");
+        name.className = "user-name";
+        name.innerText = user.displayName;
+
+        card.appendChild(name);
+        container.appendChild(card);
+    });
 }
