@@ -191,4 +191,44 @@ function populateUI(profile) {
             container.appendChild(card);
         });
     }); 
+    fetchTopArtists().then(artists => {
+        const container = document.getElementById("top-artists");
+        container.innerHTML = "<h3>Top Artists</h3>";
+
+        artists.forEach(artist => {
+            const card = document.createElement("div");
+            card.className = "artist-card";
+            card.style.cursor = "pointer";
+
+            // Open artist page when clicked
+            card.onclick = () => window.open(artist.external_urls.spotify, "_blank");
+
+            const img = new Image();
+            img.src = artist.images[0]?.url || "";
+            img.style.width = "60px";
+            img.style.height = "60px";
+            img.style.borderRadius = "50%";
+            img.style.marginRight = "12px";
+            card.appendChild(img);
+
+            const name = document.createElement("div");
+            name.innerText = artist.name;
+            name.style.fontWeight = "bold";
+
+            card.appendChild(name);
+            container.appendChild(card);
+        });
+    });
+}
+async function fetchTopArtists() {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) return [];
+
+    const res = await fetch("https://api.spotify.com/v1/me/top/artists?limit=10", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.items; // array of top artists
 }
