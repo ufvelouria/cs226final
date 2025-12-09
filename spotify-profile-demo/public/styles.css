@@ -128,7 +128,11 @@ body {
     gap: 15px; 
 }
 .left-panel h3 {
-    margin-bottom: 12px;
+    text-align: center;
+    font-size: 18px;   
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: white;
 }
 .artist-card {
     display: flex;
