@@ -238,45 +238,18 @@ async function populateTopArtists(profile, recentTracks) {
     // saveUserData(profile, recentTracks, artists);
     populateRecommended(profile, artists);
 }
-function saveUserData(profile, recentTracks, topArtists) {
-
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
- 
-    const existingIndex = users.findIndex(u => u.id === profile.id);
-
-
-    const newUser = {
-        id: profile.id,
-        displayName: profile.display_name,
-        followers: profile.followers.total,
-        avatar: profile.images[0]?.url || "",
-        recentTracks: recentTracks,
-        topArtists: topArtists.map(a => ({
-            name: a.name,
-            url: a.external_urls.spotify,
-            image: a.images[0]?.url
-        }))
-    };
-
-    if (existingIndex !== -1) {
-
-        users[existingIndex] = newUser;
-    } else {
-
-        users.push(newUser);
-    }
-
-
-    localStorage.setItem("users", JSON.stringify(users));
-}
-function getAllUsers() {
-    return JSON.parse(localStorage.getItem("users")) || [];
-}
-function clearData(){
-    localStorage.clear();
+async function saveUserToBackend(user) {
+    await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user)
+    });
 }
 
+async function fetchAllUsersFromBackend() {
+    const res = await fetch("/api/users");
+    return await res.json();
+}
 //recommendation system based on shared top artists
 function getRecommendedUsers(currentProfile, currentTopArtists) {
     const allUsers = JSON.parse(localStorage.getItem("users")) || [];
