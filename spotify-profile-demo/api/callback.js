@@ -25,6 +25,6 @@ export default async function handler(req, res) {
   const data = await tokenRes.json();
   const access_token = data.access_token;
 
-  // Redirect to frontend with token
-  res.redirect(`/?token=${access_token}`);
+  const frontendUrl = process.env.FRONTEND_URL || "https://cs226final.vercel.app/";
+  res.redirect(`${frontendUrl}?token=${access_token}`);
 }
