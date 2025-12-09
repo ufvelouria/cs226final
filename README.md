@@ -7,7 +7,8 @@ To run this project there are a few steps needed to be taken in order to do so.
 
 1. Go to https://developer.spotify.com/, sign in with your spotify account and make a new application
 2. Add a callback link to be localhost:XXXX or whatever domain you are using
-3. Copy the client ID as well as the redirectURL into script.js 
+I high recommend that Vercel is used to simulate the callback links (xxx.vercel.app would be the callback link) because Spotify does not like localhost or 127.0.0.1 as a callback link.
+3. Copy the client ID as well as the redirectURI into script.js (respective variables are at the top)
 4. Start the website, login to authenicate your Spotify account and all your stats will be shown.
 
 
