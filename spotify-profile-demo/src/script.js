@@ -112,7 +112,7 @@ async function fetchRecentTracks() {
     const accessToken = localStorage.getItem("access_token"); // store it when first fetched
     if (!accessToken) return [];
 
-    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=5", {
+    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=10", {
         headers: { Authorization: `Bearer ${accessToken}` }
     });
 
