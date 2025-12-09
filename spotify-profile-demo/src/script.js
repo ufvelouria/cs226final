@@ -192,8 +192,7 @@ function populateUI(profile) {
             container.appendChild(card);
         });
     }); 
-    populateTopArtists();
-    saveUserData(profile, recentTracks, topArtists);
+    populateTopArtists(profile, recentTracks);
 }
 async function fetchTopArtists() {
     const accessToken = localStorage.getItem("access_token");
@@ -207,7 +206,7 @@ async function fetchTopArtists() {
     const data = await res.json();
     return data.items; // array of top artists
 }
-async function populateTopArtists() {
+async function populateTopArtists(profile, recentTracks) {
     const artists = await fetchTopArtists();
     const container = document.getElementById("top-artists");
     container.innerHTML = "<h3>Top Artists</h3>";
@@ -254,6 +253,7 @@ function saveUserData(profile, recentTracks, topArtists) {
 
     filtered.push(newUser);
     localStorage.setItem("users", JSON.stringify(filtered));
+    saveUserData(profile, recentTracks, topArtists);
 }
 function getAllUsers() {
     return JSON.parse(localStorage.getItem("users")) || [];
