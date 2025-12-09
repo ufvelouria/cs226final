@@ -29,31 +29,39 @@ export default async function handler(req, res) {
         });
 
         const data = await tokenResponse.json();
+
+        // Check for errors from Spotify
+        if (!tokenResponse.ok) {
+        res.status(500).send(`Spotify token error: ${JSON.stringify(data)}`);
+        return;
+      }
+
         const access_token = data.access_token;
+        const refresh_token = data.refresh_token;
 
-        // Set HTTP-only cookie for the access token
+        const isProduction = process.env.NODE_ENV === "production";
+
         res.setHeader("Set-Cookie", [
-        cookie.serialize("spotify_token", access_token, {
-            httpOnly: true,
-            secure: isSecure,
-            maxAge: 3600,
-            path: "/"
-        }),
-        cookie.serialize("spotify_refresh_token", data.refresh_token, {
-            httpOnly: true,
-            secure: isSecure,
-            maxAge: 60 * 60 * 24 * 30, // 30 days
-            path: "/"
-        })
-    ]);
+            cookie.serialize("spotify_token", access_token, {
+                httpOnly: true,
+                secure: isProduction,
+                maxAge: 3600,
+                path: "/"
+            }),
+            cookie.serialize("spotify_refresh_token", refresh_token, {
+                httpOnly: true,
+                secure: isProduction,
+                maxAge: 60 * 60 * 24 * 30, // 30 days
+                path: "/"
+            })
+        ]);
 
-
-
-        // Redirect to homepage without token in URL
+        // Redirect to homepage
         res.writeHead(302, { Location: "/" });
         res.end();
+
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching access token");
+        console.error("Unexpected error fetching token:", err);
+        res.status(500).send(`Unexpected error: ${err.message}`);
     }
 }
