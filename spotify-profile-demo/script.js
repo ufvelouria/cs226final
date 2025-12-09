@@ -1,46 +1,35 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const loginBtn = document.getElementById("login-btn");
+const profileContainer = document.querySelector(".profile-card");
+
+loginBtn.onclick = () => {
+    window.location.href = "/api/login"; // full browser redirect
+};
+
+async function loadProfile() {
     try {
-        const res = await fetch("/api/profile");
-        if (!res.ok) throw new Error("Not logged in");
-        const data = await res.json();
+        const res = await fetch("/api/profile", { credentials: "include" });
+        if (!res.ok) {
+            loginBtn.style.display = "block";
+            profileContainer.style.display = "none";
+            return;
+        }
 
-        document.getElementById("avatar").innerHTML = `<img src="${data.profile.images[0]?.url}" alt="avatar">`;
-        document.getElementById("displayName").textContent = data.profile.display_name;
-        document.getElementById("followers").textContent = `${data.profile.followers.total} followers`;
+        const profile = await res.json();
+        loginBtn.style.display = "none";
+        profileContainer.style.display = "block";
 
-        const recentTracksContainer = document.getElementById("recent-tracks");
-        data.recentTracks.items.forEach(item => {
-            const track = item.track;
-            const trackCard = document.createElement("div");
-            trackCard.className = "track-card";
-            trackCard.innerHTML = `
-                <img src="${track.album.images[0]?.url}" alt="${track.name}">
-                <div class="track-info">
-                    <div class="track-name">${track.name}</div>
-                    <div class="track-artist">${track.artists.map(a => a.name).join(", ")}</div>
-                </div>
-            `;
-            recentTracksContainer.appendChild(trackCard);
-        });
+        document.getElementById("displayName").textContent = profile.display_name;
+        document.getElementById("followers").textContent = `${profile.followers.total} followers`;
 
-        const topArtistsContainer = document.getElementById("top-artists");
-        const heading = document.createElement("h3");
-        heading.textContent = "Top Artists";
-        topArtistsContainer.appendChild(heading);
-        data.topArtists.items.forEach(artist => {
-            const artistCard = document.createElement("div");
-            artistCard.className = "artist-card";
-            artistCard.innerHTML = `
-                <img src="${artist.images[0]?.url}" alt="${artist.name}">
-                <div class="artist-name">${artist.name}</div>
-            `;
-            topArtistsContainer.appendChild(artistCard);
-        });
+        const avatarDiv = document.getElementById("avatar");
+        if (profile.images && profile.images.length > 0) {
+            avatarDiv.innerHTML = `<img src="${profile.images[0].url}" alt="Avatar">`;
+        }
 
     } catch (err) {
-        const loginBtn = document.createElement("button");
-        loginBtn.textContent = "Login with Spotify";
-        loginBtn.onclick = () => window.location.href = "/api/login";
-        document.body.appendChild(loginBtn);
+        console.error(err);
     }
-});
+}
+
+// Load profile on page load
+loadProfile();
