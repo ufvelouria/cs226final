@@ -235,7 +235,7 @@ async function populateTopArtists(profile, recentTracks) {
         card.appendChild(name);
         container.appendChild(card);
     });
-    saveUserData(profile, recentTracks, artists);
+    // saveUserData(profile, recentTracks, artists);
     populateRecommended(profile, artists);
 }
 function saveUserData(profile, recentTracks, topArtists) {
