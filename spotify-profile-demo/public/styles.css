@@ -110,3 +110,33 @@ body {
         font-size: 22px;
     }
 }
+.main-content {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.left-panel {
+    width: 180px; /* adjust as needed */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.left-panel h3 {
+    margin-bottom: 12px;
+}
+@media (max-width: 480px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .left-panel {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
