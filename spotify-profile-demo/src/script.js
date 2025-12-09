@@ -16,6 +16,7 @@ const recentTracks = 10;
 
 const topArtists = await fetchTopArtists();
 async function init() {
+    // clearData(); // for testing purposes, clear local storage on each load
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
@@ -234,7 +235,7 @@ async function populateTopArtists(profile, recentTracks) {
         card.appendChild(name);
         container.appendChild(card);
     });
-    saveUserData(profile, recentTracks, artists);
+    // saveUserData(profile, recentTracks, artists);
     populateRecommended(profile, artists);
 }
 function saveUserData(profile, recentTracks, topArtists) {

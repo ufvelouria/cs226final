@@ -163,12 +163,14 @@ body {
 }
 /* recommended artists section */
 .right-panel {
-    width: 200px;
+    position: absolute;
+    right: 20px;   
+    top: 20px;    
+    width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
-
 .right-panel h3 {
     margin-bottom: 12px;
 }
