@@ -117,20 +117,17 @@ function populateUI(profile) {
     // Fetch last played tracks
     fetchRecentTracks().then(tracks => {
         const container = document.getElementById("recent-tracks");
-    container.innerHTML = "";
+        container.innerHTML = "";
 
-    tracks.forEach(track => {
+        tracks.forEach(track => {
             const card = document.createElement("div");
             card.className = "track-card";
+            card.style.cursor = "pointer"; // show clickable cursor
 
-            // Make the card clickable
-            const link = document.createElement("a");
-            link.href = track.external_urls.spotify; // Spotify track link
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.style.display = "flex";
-            link.style.textDecoration = "none";
-            link.style.color = "inherit";
+            // Open Spotify track when card is clicked
+            card.onclick = () => {
+                window.open(track.external_urls.spotify, "_blank");
+            };
 
             const img = new Image();
             img.src = track.album.images[0]?.url || "";
@@ -138,7 +135,7 @@ function populateUI(profile) {
             img.style.height = "60px";
             img.style.borderRadius = "8px";
             img.style.marginRight = "12px";
-            link.appendChild(img);
+            card.appendChild(img);
 
             const info = document.createElement("div");
             info.className = "track-info";
@@ -153,11 +150,9 @@ function populateUI(profile) {
 
             info.appendChild(name);
             info.appendChild(artist);
-
-            link.appendChild(info);
-            card.appendChild(link);
+            card.appendChild(info);
 
             container.appendChild(card);
         });
-    });
+    }); 
 }
