@@ -74,6 +74,19 @@ async function fetchProfile(token) {
 
     return await result.json();
 }
+async function fetchRecentTracks() {
+    const accessToken = localStorage.getItem("access_token"); // store it when first fetched
+    if (!accessToken) return [];
+
+    const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=5", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return data.items.map(item => item.track);
+}
 
 function populateUI(profile) {
     // Display name
