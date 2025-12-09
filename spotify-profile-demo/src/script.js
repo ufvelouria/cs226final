@@ -17,7 +17,7 @@ async function init() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
-
+    redirectToAuthCodeFlow(clientId);
     // makes sure that this works if the token is expired or invalid
     if (storedToken && storedToken !== "null" && storedToken !== "") {
         try { //try and catch to make sure that token is valid
