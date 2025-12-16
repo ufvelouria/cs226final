@@ -1,5 +1,5 @@
-const clientId = "6c119d659723461ea03ee2c8e4957245"; //setup
-const redirectUri = "https://cs226final.vercel.app/"; //setup
+const clientId = "clientIDfromSpotifyAPP goes here"; //setup
+const redirectUri = "localhost:8888"; //setup
 
 const recentTracks = 10;
 
