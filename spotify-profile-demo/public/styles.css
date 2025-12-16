@@ -1,3 +1,14 @@
+/* Front page */
+.front{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #121212;
+    color: white;
+}
+
 body {
     margin: 0;
     font-family: "Inter", sans-serif;
