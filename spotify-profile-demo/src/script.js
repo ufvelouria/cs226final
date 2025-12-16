@@ -28,12 +28,16 @@ async function init() {
             localStorage.removeItem("access_token");
             redirectToAuthCodeFlow(clientId);
         }
+        front.style.display = "none";
+        container.style.display = "flex";
     } else if (code) {
         //gets code from spotify callback, lets user in
         const token = await getAccessToken(clientId, code);
         const profile = await fetchProfile(token);
         const tracks = await fetchRecentTracks();
         populateUI(profile, tracks);
+        front.style.display = "none";
+        container.style.display = "flex";
     } else {
         // no code or token created, redirect to spotify auth
         front.style.display = "flex";
