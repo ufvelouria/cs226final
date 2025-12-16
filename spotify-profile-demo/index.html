@@ -2,14 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Spotify Profile demo</title>
+    <!-- <title>Spotify Profile demo</title>
+    <p>Log in with Spotify to see your profile, recent tracks, and top artists.</p>
+    <button id="loginBtn">Log in with Spotify</button> -->
 
     <link rel="stylesheet" href="/styles.css">
 
     <script src="/src/script.js" type="module" defer></script>
 </head>
 <body>
-    <div class="container">
+    <div id="front" class="frontpg">
+        <h1>Spotify Profile Demo</h1>
+        <p>Log in with Spotify to see your profile, recent tracks, and top artists.</p>
+        <button id="loginBtn">Log in with Spotify</button>
+    </div>
+    <div id="container" class="container">
         <div id="top-artists" class="left-panel"></div> 
         <div class="profile-card">
             <div id="avatar" class="avatar"></div>

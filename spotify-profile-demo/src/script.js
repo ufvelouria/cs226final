@@ -10,6 +10,12 @@ async function init() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const storedToken = localStorage.getItem("access_token");
+
+    const front = document.getElementById("front");
+    const container = document.getElementById("container");
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.onclick = () => redirectToAuthCodeFlow(clientId);
     // makes sure that this works if the token is expired or invalid
     if (storedToken && storedToken !== "null" && storedToken !== "") {
         try { //try and catch to make sure that token is valid
@@ -30,7 +36,8 @@ async function init() {
         populateUI(profile, tracks);
     } else {
         // no code or token created, redirect to spotify auth
-        redirectToAuthCodeFlow(clientId);
+        front.style.display = "flex";
+        container.style.display = "none";
     }
 }
 
